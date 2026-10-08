@@ -53,6 +53,10 @@ yarn-error.log
 **/fastlane/screenshots
 **/fastlane/test_output
 
+# Firebase client config — contains API keys/OAuth client secrets.
+# Supplied by the project owner; never fabricate or commit a replacement.
+android/app/google-services.json
+
 # Bundle artifact
 *.jsbundle
 

@@ -1,6 +1,9 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+// Firebase Google Services plugin — consumes android/app/google-services.json
+// and injects the Firebase Android client config matching applicationId (stream.z).
+apply plugin: "com.google.gms.googleservices"
 
 // Read version from package.json
 def getVersionFromPackageJson() {
@@ -45,7 +48,15 @@ react {
     //   The list of variants to that are debuggable. For those we're going to
     //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
     //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
-    // debuggableVariants = ["liteDebug", "prodDebug"]
+    //
+    //   CRITICAL: standaloneDebug is deliberately EXCLUDED from this list.
+    //   The RN Gradle plugin only runs JS/Hermes bundling for variants that are
+    //   NOT in debuggableVariants. If standaloneDebug were listed here, the plugin
+    //   would skip bundling and the APK would fall back to loading JS from a Metro
+    //   dev server at runtime — exactly the "Unable to load script" failure mode.
+    //   By excluding it, standaloneDebug bundles its JS into assets/index.android.bundle
+    //   while remaining debuggable for physical-device iteration.
+    debuggableVariants = ["debug"]
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
@@ -101,9 +112,12 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.flickv4"
+    // AGP namespace is authoritative for the generated AndroidManifest package.
+    // Kotlin sources live under com.streamz (see java/com/streamz/).
+    namespace "com.streamz"
     defaultConfig {
-        applicationId "com.flickv4"
+        // Final installable identity. Must match google-services.json package_name.
+        applicationId "stream.z"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode getVersionCodeFromPackageJson()
@@ -119,14 +133,32 @@ android {
     }
     buildTypes {
         debug {
+            // Metro development build: JS is loaded from localhost:8081 at runtime.
+            // This is the ONLY build type that requires Metro + a computer.
             signingConfig signingConfigs.debug
+            buildConfigField "boolean", "ENABLE_DEV_SUPPORT", "true"
+            manifestPlaceholders = [usesCleartextTraffic: "true"]
         }
+
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
+            // Standalone APK: the RN Gradle plugin bundles JS/assets into
+            // assets/index.android.bundle during assembleRelease. No Metro.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            buildConfigField "boolean", "ENABLE_DEV_SUPPORT", "false"
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
+        }
+
+        // Standalone debug variant: same bundled JS as release, but debuggable
+        // and unsigned. Used for physical-device iteration WITHOUT Metro.
+        // Dev support is explicitly OFF so this build type can never silently
+        // fall back to a Metro dev server despite being debuggable.
+        standaloneDebug {
+            signingConfig signingConfigs.debug
+            debuggable true
+            buildConfigField "boolean", "ENABLE_DEV_SUPPORT", "false"
+            manifestPlaceholders = [usesCleartextTraffic: "false"]
         }
     }
 }
@@ -139,4 +171,10 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // Firebase BoM pins the native SDK versions for this RN/Kotlin/AGP combo.
+    // Analytics + Auth are the minimum required for M1 build verification.
+    implementation platform("com.google.firebase:firebase-bom:33.15.0")
+    implementation "com.google.firebase:firebase-analytics"
+    implementation "com.google.firebase:firebase-auth"
 }
