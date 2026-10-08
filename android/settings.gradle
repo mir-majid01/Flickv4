@@ -11,9 +11,9 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex ->
     try {
       def content = autolinkFile.getText()
       println "=== AUTOLINK DEBUG: file length = ${content.length()}, first 500 chars = ${content.substring(0, Math.min(500, content.length()))} ==="
-      // Generate to a temp file to avoid copyTo issues when input == output
+      // Copy to temp file using Groovy's correct file copy method
       def tempFile = file("build/generated/autolinking/autolinking-temp.json")
-      autolinkFile.copyTo(tempFile)
+      tempFile.write(autolinkFile.getText())
       ex.autolinkLibrariesFromConfigFile(tempFile)
       println "=== AUTOLINK DEBUG: config file loaded successfully ==="
     } catch (Exception e) {
