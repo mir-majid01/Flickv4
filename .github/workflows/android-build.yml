@@ -68,7 +68,7 @@ jobs:
           echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
       - name: Generate autolinking config
         run: |
-          npx @react-native-community/cli config
+          node node_modules/@react-native-community/cli/build/bin.js config
           ls -la android/build/generated/autolinking/autolinking.json
       - name: Build standalone release APK
         run: cd android && ./gradlew assembleRelease
