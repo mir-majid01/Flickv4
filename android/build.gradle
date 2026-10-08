@@ -1,38 +1,23 @@
-pluginManagement {
-    includeBuild("../node_modules/@react-native/gradle-plugin")
+buildscript {
+    ext {
+        buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.1.20"
+    }
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        // Google Services plugin for Firebase config injection (applied in app/build.gradle)
+        classpath("com.google.gms:google-services:4.4.2")
     }
 }
-plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex ->
-  // Use pre-generated autolinking config when available (CI), otherwise fall back
-  // to running the CLI command (local dev). This avoids invoking npx during
-  // Gradle settings evaluation, which fails when npx is not on PATH.
-  def autolinkFile = file("build/generated/autolinking/autolinking.json")
-  println "=== AUTOLINK DEBUG: file exists = ${autolinkFile.exists()}, path = ${autolinkFile.absolutePath} ==="
-  if (autolinkFile.exists()) {
-    println "=== AUTOLINK DEBUG: using pre-generated config file ==="
-    try {
-      def content = autolinkFile.getText()
-      println "=== AUTOLINK DEBUG: file length = ${content.length()}, first 500 chars = ${content.substring(0, Math.min(500, content.length()))} ==="
-      // Copy to temp file using Groovy's correct file copy method
-      def tempFile = file("build/generated/autolinking/autolinking-temp.json")
-      tempFile.write(autolinkFile.getText())
-      ex.autolinkLibrariesFromConfigFile(tempFile)
-      println "=== AUTOLINK DEBUG: config file loaded successfully ==="
-    } catch (Exception e) {
-      println "=== AUTOLINK ERROR: ${e.class.name}: ${e.message} ==="
-      e.printStackTrace()
-      throw e
-    }
-  } else {
-    println "=== AUTOLINK DEBUG: falling back to npx command ==="
-    ex.autolinkLibrariesFromCommand()
-  }
-}
-rootProject.name = 'StreamZ'
-include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')
+
+apply plugin: "com.facebook.react.rootproject"
