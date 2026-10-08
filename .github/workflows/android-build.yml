@@ -68,6 +68,7 @@ jobs:
           echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
       - name: Generate autolinking config
         run: |
+          mkdir -p android/build/generated/autolinking
           node node_modules/@react-native-community/cli/build/bin.js config > android/build/generated/autolinking/autolinking.json 2>&1
           echo "=== Autolinking config generated ==="
           ls -la android/build/generated/autolinking/autolinking.json
