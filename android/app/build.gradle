@@ -3,7 +3,10 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 // Firebase Google Services plugin — consumes android/app/google-services.json
 // and injects the Firebase Android client config matching applicationId (stream.z).
-apply plugin: "com.google.gms.googleservices"
+// Use plugins DSL to resolve from Google's Maven repository via root buildscript classpath
+plugins {
+    id "com.google.gms.google-services" version "4.4.2"
+}
 
 // Read version from package.json
 def getVersionFromPackageJson() {
