@@ -67,7 +67,12 @@ jobs:
         run: |
           echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
       - name: Build standalone release APK
-        run: cd android && PATH="$PWD/../node_modules/.bin:$PATH" ./gradlew assembleRelease
+        run: |
+          echo "PATH before: $PATH"
+          export PATH="$(dirname $(which node)):$(npm bin -g 2>/dev/null || echo ""):$PATH"
+          echo "PATH after: $PATH"
+          which npx && npx --version || echo "npx STILL NOT FOUND"
+          cd android && ./gradlew assembleRelease
       - name: Verify APK
         run: |
           test -f android/app/build/outputs/apk/release/app-release.apk
