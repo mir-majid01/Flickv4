@@ -1,4 +1,4 @@
-package com.flickv4
+package com.streamz
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

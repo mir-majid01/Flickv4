@@ -1,4 +1,4 @@
-package com.flickv4
+package com.streamz
 
 import android.content.Intent
 import android.net.Uri
