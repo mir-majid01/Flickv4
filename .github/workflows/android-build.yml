@@ -75,7 +75,7 @@ jobs:
           echo "=== First 200 bytes ==="
           head -c 200 android/build/generated/autolinking/autolinking.json
       - name: Build standalone release APK
-        run: cd android && ./gradlew assembleRelease
+        run: cd android && ./gradlew assembleRelease --stacktrace --info
       - name: Verify APK
         run: |
           test -f android/app/build/outputs/apk/release/app-release.apk
