@@ -67,7 +67,7 @@ jobs:
         run: |
           echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
       - name: Build standalone release APK
-        run: cd android && ./gradlew assembleRelease
+        run: cd android && PATH="$PWD/../node_modules/.bin:$PATH" ./gradlew assembleRelease
       - name: Verify APK
         run: |
           test -f android/app/build/outputs/apk/release/app-release.apk
