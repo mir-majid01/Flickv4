@@ -1,6 +1,16 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex ->
+  // Use pre-generated autolinking config when available (CI), otherwise fall back
+  // to running the CLI command (local dev). This avoids invoking npx during
+  // Gradle settings evaluation, which fails when npx is not on PATH.
+  def autolinkFile = file("build/generated/autolinking/autolinking.json")
+  if (autolinkFile.exists()) {
+    ex.autolinkLibrariesFromConfigFile(autolinkFile)
+  } else {
+    ex.autolinkLibrariesFromCommand()
+  }
+}
 rootProject.name = 'StreamZ'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
