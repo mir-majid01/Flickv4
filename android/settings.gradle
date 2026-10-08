@@ -5,9 +5,12 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex ->
   // to running the CLI command (local dev). This avoids invoking npx during
   // Gradle settings evaluation, which fails when npx is not on PATH.
   def autolinkFile = file("build/generated/autolinking/autolinking.json")
+  println "=== AUTOLINK DEBUG: file exists = ${autolinkFile.exists()}, path = ${autolinkFile.absolutePath} ==="
   if (autolinkFile.exists()) {
+    println "=== AUTOLINK DEBUG: using pre-generated config file ==="
     ex.autolinkLibrariesFromConfigFile(autolinkFile)
   } else {
+    println "=== AUTOLINK DEBUG: falling back to npx command ==="
     ex.autolinkLibrariesFromCommand()
   }
 }
