@@ -15,9 +15,11 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-        // Google Services plugin for Firebase config injection (applied in app/build.gradle)
-        classpath("com.google.gms:google-services:4.4.2")
     }
+}
+
+plugins {
+    id "com.google.gms.google-services" version "4.4.2" apply false
 }
 
 apply plugin: "com.facebook.react.rootproject"
