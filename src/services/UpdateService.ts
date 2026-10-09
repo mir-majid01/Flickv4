@@ -5,10 +5,10 @@ import {version as currentVersion} from '../../package.json';
 
 const {ApkInstaller} = NativeModules;
 
-// GitHub repository configuration
+// GitHub repository configuration - StreamZ's own update channel
 const GITHUB_CONFIG = {
-  owner: 'sheeshcake', // Replace with your GitHub username/org
-  repo: 'Flickv4', // Replace with your repository name
+  owner: 'mir-majid01', // StreamZ's own repo
+  repo: 'Flickv4', // StreamZ's own repo
   apiUrl: 'https://api.github.com',
 };
 
@@ -107,14 +107,14 @@ class UpdateService {
   /**
    * Fetch the latest release from GitHub
    */
-  async getLatestRelease(): Promise<GitHubRelease | null> {
+  private async getLatestRelease(): Promise<GitHubRelease | null> {
     try {
       const url = `${GITHUB_CONFIG.apiUrl}/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/releases/latest`;
       
       const response = await axios.get<GitHubRelease>(url, {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Flickv4-App',
+          'User-Agent': 'StreamZ-App',
         },
         timeout: 10000,
       });
@@ -147,7 +147,7 @@ class UpdateService {
       const response = await axios.get<GitHubRelease[]>(url, {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Flickv4-App',
+          'User-Agent': 'StreamZ-App',
         },
         timeout: 10000,
       });
@@ -272,7 +272,7 @@ class UpdateService {
     downloadUrl: string,
     onProgress?: (progress: DownloadProgress) => void,
   ): Promise<string> {
-    const fileName = `Flickv4-update-${Date.now()}.apk`;
+    const fileName = `StreamZ-update-${Date.now()}.apk`;
     const downloadPath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
     try {

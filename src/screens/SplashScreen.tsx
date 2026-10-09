@@ -37,20 +37,7 @@ const SplashScreen: React.FC<RootStackScreenProps<'Splash'>> = ({navigation}) =>
     checkForUpdates();
   }, []);
 
-  // Navigate to main screen when both loading is complete and no update modal is showing
-  useEffect(() => {
-    if (!isInitialLoading && updateCheckComplete && !showUpdateModal) {
-      const timeoutId = setTimeout(() => {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
-        });
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isInitialLoading, updateCheckComplete, showUpdateModal, navigation]);
-
+  // Handle update modal close - don't navigate, let the access gate handle navigation
   const handleCloseUpdateModal = () => {
     setShowUpdateModal(false);
     setUpdateCheckComplete(true);
